@@ -1,20 +1,19 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import BottomTabNavigator from './components/navigation/BottomTabNavigator';
+import { MedicineProvider } from './components/contexts/MedicineContext';
+import { TransactionProvider } from './components/contexts/TransactionContext';
 
-export default function App() {
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <MedicineProvider>
+      <TransactionProvider>
+        <NavigationContainer>
+          <BottomTabNavigator />
+        </NavigationContainer>
+      </TransactionProvider>
+    </MedicineProvider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
