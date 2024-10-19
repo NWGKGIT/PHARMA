@@ -1,4 +1,4 @@
-// components/screens/HomeScreen.js
+// components/screens/DeleteMedicineScreen.js
 
 import React, { useContext, useState, useEffect } from 'react';
 import {
@@ -11,18 +11,18 @@ import {
   Alert,
 } from 'react-native';
 import { MedicineContext } from '../contexts/MedicineContext';
-import MedicineCard from '../MedicineCard';
-import OrderModal from '../OrderModal';
+import MedicineCardDel from '../MedicineCardDel';
+import DeleteModal from '../DeleteModal';
 
-const HomeScreen = () => {
-  const { medicines } = useContext(MedicineContext);
+const DeleteMedicineScreen = () => {
+  const { medicines, deleteMedicines } = useContext(MedicineContext);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredMedicines, setFilteredMedicines] = useState(medicines);
 
   // State to manage selected medicines and their amounts
   const [selectedMedicines, setSelectedMedicines] = useState({});
 
-  const [isOrderModalVisible, setIsOrderModalVisible] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -49,6 +49,13 @@ const HomeScreen = () => {
         return updated;
       });
     }
+  };
+
+  const handleSelectAll = (id, maxAmount) => {
+    setSelectedMedicines((prev) => ({
+      ...prev,
+      [id]: maxAmount,
+    }));
   };
 
   const handleIncreaseAmount = (id) => {
@@ -112,42 +119,39 @@ const HomeScreen = () => {
       />
 
       {/* Medicine List */}
-      {filteredMedicines.length > 0 ? (
-        <FlatList
-          data={sortedMedicines()}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <MedicineCard
-              medicine={item}
-              isSelected={selectedMedicines.hasOwnProperty(item.id)}
-              amount={selectedMedicines[item.id] || 0}
-              onSelect={handleSelectMedicine}
-              onIncrease={() => handleIncreaseAmount(item.id)}
-              onDecrease={() => handleDecreaseAmount(item.id)}
-            />
-          )}
-          contentContainerStyle={styles.list}
-        />
-      ) : (
-        <Text style={styles.noResultsText}>No medicines found.</Text>
-      )}
+      <FlatList
+        data={sortedMedicines()}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <MedicineCardDel
+            medicine={item}
+            isSelected={selectedMedicines.hasOwnProperty(item.id)}
+            amount={selectedMedicines[item.id] || 0}
+            onSelect={handleSelectMedicine}
+            onIncrease={() => handleIncreaseAmount(item.id)}
+            onDecrease={() => handleDecreaseAmount(item.id)}
+            onSelectAll={handleSelectAll}
+          />
+        )}
+        contentContainerStyle={styles.list}
+      />
 
-      {/* Order Button */}
+      {/* Delete Button */}
       <TouchableOpacity
         style={[
-          styles.orderButton,
-          Object.keys(selectedMedicines).length === 0 && styles.orderButtonDisabled,
+          styles.deleteButton,
+          Object.keys(selectedMedicines).length === 0 && styles.deleteButtonDisabled,
         ]}
-        onPress={() => setIsOrderModalVisible(true)}
+        onPress={() => setIsDeleteModalVisible(true)}
         disabled={Object.keys(selectedMedicines).length === 0}
       >
-        <Text style={styles.orderButtonText}>Order</Text>
+        <Text style={styles.deleteButtonText}>Delete</Text>
       </TouchableOpacity>
 
-      {/* Order Modal */}
-      <OrderModal
-        visible={isOrderModalVisible}
-        onClose={() => setIsOrderModalVisible(false)}
+      {/* Delete Modal */}
+      <DeleteModal
+        visible={isDeleteModalVisible}
+        onClose={() => setIsDeleteModalVisible(false)}
         selectedMedicines={selectedMedicineDetails}
       />
     </View>
@@ -172,14 +176,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   list: {
-    paddingBottom: 80, // To ensure the order button doesn't overlap
+    paddingBottom: 80, // To ensure the delete button doesn't overlap
   },
-  orderButton: {
+  deleteButton: {
     position: 'absolute',
     bottom: 20,
     left: '10%',
     right: '10%',
-    backgroundColor: '#2196F3',
+    backgroundColor: '#f44336',
     paddingVertical: 10,
     borderRadius: 10,
     alignItems: 'center',
@@ -189,20 +193,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3, // For iOS shadow
     shadowRadius: 3, // For iOS shadow
   },
-  orderButtonDisabled: {
+  deleteButtonDisabled: {
     backgroundColor: '#a9a9a9',
   },
-  orderButtonText: {
+  deleteButtonText: {
     color: '#fff',
     fontSize: 20,
     fontWeight: 'bold',
   },
-  noResultsText: {
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 18,
-    color: '#555',
-  },
 });
 
-export default HomeScreen;
+export default DeleteMedicineScreen;

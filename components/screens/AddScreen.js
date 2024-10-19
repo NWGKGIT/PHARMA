@@ -15,8 +15,8 @@ const AddScreen = () => {
       {/* Add New Medicine Button */}
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('AddNewMedicineForm')}
-      > 
+        onPress={() => navigation.navigate('AddExistingMedicineForm')}
+      >  
         <Image source={require('../../assets/AddExisting.png')}  style={styles.icon} />
         <Text style={styles.buttonText}>Add Existing Medicine</Text>
       </TouchableOpacity>
@@ -24,10 +24,19 @@ const AddScreen = () => {
       {/* Search Existing Medicine Button */}
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('Add', { screen: 'NewMedicineForm' })}
+        onPress={() => navigation.navigate('NewMedicineForm')}
       >
         <Image source={require('../../assets/Add.png')}style={styles.icon} />
         <Text style={styles.buttonText}>Add New Medicine</Text>
+      </TouchableOpacity>
+
+      {/* Delete Medicine Button */}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('DeleteMedicineForm')}
+      >
+        <Image source={require('../../assets/close.png')} style={styles.icon} />
+        <Text style={styles.buttonText}>Delete Medicine</Text>
       </TouchableOpacity>
     </View>
   );

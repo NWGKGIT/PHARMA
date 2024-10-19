@@ -13,12 +13,13 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { MedicineContext } from './contexts/MedicineContext';
 
+
 const existingMedicineTypes = [
   { label: 'Tablet', value: 'Tablet' },
   { label: 'Capsule', value: 'Capsule' },
   { label: 'Syrup', value: 'Syrup' },
   { label: 'Injection', value: 'Injection' },
-];
+]; 
 
 const NewMedicineForm = ({ navigation }) => {
   const { addMedicine } = useContext(MedicineContext); 
@@ -39,38 +40,30 @@ const NewMedicineForm = ({ navigation }) => {
   };
 
   const handleDone = () => {
-    if (
-      !medicineName ||
-      !medicineType ||
-      !amount ||
-      isNaN(amount) ||
-      !price ||
-      isNaN(price) ||
-      !expirationDate
-    ) {
+    if (!medicineName || !medicineType || !amount || isNaN(amount) || !price || isNaN(price) || !expirationDate) {
       Alert.alert('Invalid Input', 'Please fill in all fields correctly.');
       return;
     }
-
+  
     const newMedicine = {
       name: medicineName,
       type: medicineType,
       amount: parseInt(amount, 10),
       price: parseFloat(price),
-      expirationDate: expirationDate.toISOString().split('T')[0], 
-      image: require('../assets/medicine.jpg'), 
+      expirationDate: expirationDate.toISOString().split('T')[0],
+      image: require('../assets/medicine.jpg'), // or you can handle image selection here
     };
-    addMedicine(newMedicine);
-    console.log('New Medicine Added:', newMedicine);
-    Alert.alert('Success', 'Medicine added successfully!', [
-      { text: 'OK', onPress: () => navigation.goBack() },
-    ]);
+  
+    addMedicine(newMedicine); // This now adds to the database
+    Alert.alert('Success', 'Medicine added successfully!', [{ text: 'OK', onPress: () => navigation.goBack() }]);
+  
     setMedicineName('');
     setMedicineType(null);
     setAmount('');
     setPrice('');
     setExpirationDate(new Date());
   };
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

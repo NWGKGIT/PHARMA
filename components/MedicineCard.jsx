@@ -3,10 +3,12 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import upIcon from '../assets/up.png';
 import downIcon from '../assets/down.png';
 import medicine_image from '../assets/medicine.jpg';
+
 const MedicineCard = ({
   medicine,
   isSelected,
   amount,
+  totalAmount,  // Total amount in inventory
   onSelect,
   onIncrease,
   onDecrease,
@@ -24,6 +26,10 @@ const MedicineCard = ({
         <Text style={styles.expiration}>Expires: {medicine.expirationDate}</Text>
       </View>
       <View style={styles.amountBox}>
+        {/* Display total amount in a separate box */}
+        <View style={styles.totalAmountBox}>
+          <Text style={styles.totalAmountText}>{totalAmount}</Text>
+        </View>
         <TouchableOpacity onPress={onIncrease} style={styles.button}>
           <Image source={upIcon} style={styles.icon} />
         </TouchableOpacity>
@@ -97,6 +103,18 @@ const styles = StyleSheet.create({
   icon: {
     width: 28,
     height: 28,
+  },
+  // other styles unchanged
+  totalAmountBox: {
+    padding: 5,
+    marginBottom: 5,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+  },
+  totalAmountText: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

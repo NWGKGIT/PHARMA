@@ -36,10 +36,21 @@ export const TransactionProvider = ({ children }) => {
     }
   };
 
+  const deleteTransaction = async (id) => {
+    const updatedTransactions = transactions.filter((transaction) => transaction.id !== id);
+    setTransactions(updatedTransactions);
+    try {
+      await AsyncStorage.setItem('transactions', JSON.stringify(updatedTransactions));
+      Alert.alert('Success', 'Transaction deleted successfully!');
+    } catch (error) {
+      console.log('Failed to save transactions:', error);
+      Alert.alert('Error', 'Failed to delete transaction.');
+    }
+  };
+
   return (
-    <TransactionContext.Provider value={{ transactions, addTransaction }}>
+    <TransactionContext.Provider value={{ transactions, addTransaction, deleteTransaction }}>
       {children}
     </TransactionContext.Provider>
   );
 };
- 

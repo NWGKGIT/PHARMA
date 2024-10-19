@@ -11,12 +11,14 @@ import {
   Alert,
 } from 'react-native';
 import { TransactionContext } from './contexts/TransactionContext';
+import { MedicineContext } from './contexts/MedicineContext'; // Import MedicineContext
 import closeIcon from '../assets/close.png'; 
 
 const { width, height } = Dimensions.get('window');
 
 const OrderModal = ({ visible, onClose, selectedMedicines }) => {
   const { addTransaction } = useContext(TransactionContext);
+  const { updateMedicineAmount } = useContext(MedicineContext); // Use MedicineContext for updating amounts
   const [confirmationVisible, setConfirmationVisible] = useState(false);
 
   const totalPrice = selectedMedicines.reduce((total, med) => {
@@ -37,6 +39,17 @@ const OrderModal = ({ visible, onClose, selectedMedicines }) => {
       total: totalPrice,
       date: new Date().toISOString(),
     };
+
+    // Update the medicine amounts in the database
+    selectedMedicines.forEach((medicine) => {
+      const newAmount = medicine.amount - medicine.selectedAmount;
+      if (newAmount >= 0) {
+        updateMedicineAmount(medicine.id, newAmount);
+      } else {
+        Alert.alert('Error', `Not enough stock for ${medicine.name}.`);
+      }
+    });
+
     addTransaction(newTransaction);
     setConfirmationVisible(false);
     onClose();

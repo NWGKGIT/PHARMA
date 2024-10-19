@@ -52,12 +52,11 @@ const EditMedicineForm = ({ route, navigation }) => {
 
   // Handle Done button
   const handleDone = async () => {
-    // Validate inputs
     if (!medicineName || !medicineType || !amount || isNaN(amount) || !expirationDate) {
       Alert.alert('Invalid Input', 'Please fill in all fields correctly.');
       return;
     }
-
+  
     let finalImageUri = medicine.image;
     if (tempImageUri) {
       const fileName = `medicine${medicine.id}.png`;
@@ -67,28 +66,25 @@ const EditMedicineForm = ({ route, navigation }) => {
           from: tempImageUri,
           to: assetsPath,
         });
-        finalImageUri = assetsPath; // Save image path
+        finalImageUri = assetsPath;
       } catch (error) {
         console.log('Failed to save image:', error);
         Alert.alert('Error', 'Failed to save image.');
       }
     }
-
-    // Handle form submission
+  
     const updatedMedicine = {
       name: medicineName,
       type: medicineType,
       amount: parseInt(amount, 10),
-      expirationDate: expirationDate.toISOString().split('T')[0], // Format: YYYY-MM-DD
+      expirationDate: expirationDate.toISOString().split('T')[0],
       image: finalImageUri,
     };
-
-    editMedicine(medicine.id, updatedMedicine);
-    Alert.alert('Success', 'Medicine updated successfully!', [
-      { text: 'OK', onPress: () => navigation.goBack() },
-    ]);
+  
+    editMedicine(medicine.id, updatedMedicine); // Update the database and context
+    Alert.alert('Success', 'Medicine updated successfully!', [{ text: 'OK', onPress: () => navigation.goBack() }]);
   };
-
+  
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Medicine Image */}
@@ -200,7 +196,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   doneButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#2196F3', 
     padding: 15,
     borderRadius: 8,
     marginTop: 30,
