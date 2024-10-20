@@ -25,11 +25,12 @@ const MedicineCard = ({
         <Text style={styles.price}>Price: ${medicine.price}</Text>
         <Text style={styles.expiration}>Expires: {medicine.expirationDate}</Text>
       </View>
+      <View style={styles.totalAmountBox}>
+          <Text style={styles.totalAmountText}>{medicine.amount}</Text>
+        </View>
       <View style={styles.amountBox}>
         {/* Display total amount in a separate box */}
-        <View style={styles.totalAmountBox}>
-          <Text style={styles.totalAmountText}>{totalAmount}</Text>
-        </View>
+
         <TouchableOpacity onPress={onIncrease} style={styles.button}>
           <Image source={upIcon} style={styles.icon} />
         </TouchableOpacity>
@@ -106,14 +107,14 @@ const styles = StyleSheet.create({
   },
   // other styles unchanged
   totalAmountBox: {
-    padding: 5,
-    marginBottom: 5,
+    padding: 15,
+    margin: 10,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 5,
   },
   totalAmountText: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
   },
 });
