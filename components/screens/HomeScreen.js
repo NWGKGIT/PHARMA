@@ -1,5 +1,3 @@
-// components/screens/HomeScreen.js
-
 import React, { useContext, useState, useEffect } from 'react';
 import {
   View,
@@ -19,12 +17,12 @@ const HomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredMedicines, setFilteredMedicines] = useState(medicines);
 
-  // State to manage selected medicines and their amounts
   const [selectedMedicines, setSelectedMedicines] = useState({});
-
   const [isOrderModalVisible, setIsOrderModalVisible] = useState(false);
 
   useEffect(() => {
+    console.log('Medicines updated:', medicines);
+    // Update filteredMedicines when medicines are fetched or when search query changes
     if (searchQuery.trim() === '') {
       setFilteredMedicines(medicines);
     } else {
@@ -36,11 +34,15 @@ const HomeScreen = () => {
     }
   }, [searchQuery, medicines]);
 
+  useEffect(() => {
+    console.log('Filtered medicines updated:', filteredMedicines);
+  }, [filteredMedicines]);
+
   const handleSelectMedicine = (id, isSelected) => {
     if (isSelected) {
       setSelectedMedicines((prev) => ({
         ...prev,
-        [id]: 1, // Initialize amount to 1
+        [id]: 1, 
       }));
     } else {
       setSelectedMedicines((prev) => {
@@ -103,7 +105,6 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Search Bar */}
       <TextInput
         style={styles.searchBar}
         placeholder="Search medicines..."
@@ -111,11 +112,10 @@ const HomeScreen = () => {
         onChangeText={(text) => setSearchQuery(text)}
       />
 
-      {/* Medicine List */}
       {filteredMedicines.length > 0 ? (
         <FlatList
           data={sortedMedicines()}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()} // Ensure keyExtractor is a string
           renderItem={({ item }) => (
             <MedicineCard
               medicine={item}
@@ -132,7 +132,6 @@ const HomeScreen = () => {
         <Text style={styles.noResultsText}>No medicines found.</Text>
       )}
 
-      {/* Order Button */}
       <TouchableOpacity
         style={[
           styles.orderButton,
@@ -144,7 +143,6 @@ const HomeScreen = () => {
         <Text style={styles.orderButtonText}>Order</Text>
       </TouchableOpacity>
 
-      {/* Order Modal */}
       <OrderModal
         visible={isOrderModalVisible}
         onClose={() => setIsOrderModalVisible(false)}
@@ -172,7 +170,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   list: {
-    paddingBottom: 80, // To ensure the order button doesn't overlap
+    paddingBottom: 80,
   },
   orderButton: {
     position: 'absolute',
@@ -183,11 +181,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     alignItems: 'center',
-    elevation: 2, // For Android shadow
-    shadowColor: '#000', // For iOS shadow
-    shadowOffset: { width: 0, height: 2 }, // For iOS shadow
-    shadowOpacity: 0.3, // For iOS shadow
-    shadowRadius: 3, // For iOS shadow
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
   },
   orderButtonDisabled: {
     backgroundColor: '#a9a9a9',

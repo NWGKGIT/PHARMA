@@ -1,10 +1,10 @@
-import * as SQLite from 'expo-sqlite';
+import * as SQLite from 'expo-sqlite/legacy';
 
 let db;
 
-// Function to initialize the SQLite database asynchronously
+// Function to initialize the SQLite database
 export const initializeDatabase = async () => {
-  db = await SQLite.openDatabaseAsync('pharma_inventory.db');
+  db = SQLite.openDatabase('pharma_inventory.db');
   await createMedicinesTable();
   await createTransactionsTable();
 };
@@ -22,16 +22,10 @@ const createMedicinesTable = () => {
           price REAL,
           expirationDate TEXT,
           image TEXT
-        )`,
+        );`,
         [],
-        () => {
-          console.log('Medicines table created successfully');
-          resolve();
-        },
-        (txObj, error) => {
-          console.log('Error creating medicines table:', error);
-          reject(error);
-        }
+        resolve,
+        (txObj, error) => reject(error)
       );
     });
   });
@@ -47,23 +41,17 @@ const createTransactionsTable = () => {
           items TEXT,
           total REAL,
           date TEXT
-        )`,
+        );`,
         [],
-        () => {
-          console.log('Transactions table created successfully');
-          resolve();
-        },
-        (txObj, error) => {
-          console.log('Error creating transactions table:', error);
-          reject(error);
-        }
+        resolve,
+        (txObj, error) => reject(error)
       );
     });
   });
 };
 
 // Function to insert a new medicine into the `medicines` table
-export const insertMedicine = (name, type, amount, price, expirationDate, image) => {
+export const insertMedicine = (medicine, callback) => {
   if (!db) {
     console.error('Database not initialized');
     return;
@@ -72,75 +60,53 @@ export const insertMedicine = (name, type, amount, price, expirationDate, image)
   db.transaction((tx) => {
     tx.executeSql(
       `INSERT INTO medicines (name, type, amount, price, expirationDate, image) VALUES (?, ?, ?, ?, ?, ?)`,
-      [name, type, amount, price, expirationDate, image],
-      (txObj, result) => console.log('Medicine added successfully', result),
-      (txObj, error) => console.log('Error adding medicine:', error)
+      [medicine.name, medicine.type, medicine.amount, medicine.price, medicine.expirationDate, medicine.image],
+      (txObj, result) => callback(result.insertId),
+      (txObj, error) => console.error('Error adding medicine:', error)
     );
   });
 };
 
-export const updateMedicineAmount = (id, newAmount) => {
+// Function to update a medicine
+export const updateMedicine = (id, updatedMedicine, callback) => {
   db.transaction((tx) => {
     tx.executeSql(
-      `UPDATE medicines SET amount=? WHERE id=?`,
-      [newAmount, id],
-      (txObj, result) => console.log(`Medicine with id ${id} updated successfully`),
-      (txObj, error) => console.log('Error updating medicine amount:', error)
+      `UPDATE medicines SET name = ?, type = ?, amount = ?, price = ?, expirationDate = ?, image = ? WHERE id = ?`,
+      [updatedMedicine.name, updatedMedicine.type, updatedMedicine.amount, updatedMedicine.price, updatedMedicine.expirationDate, updatedMedicine.image, id],
+      (txObj) => callback(),
+      (txObj, error) => console.error('Error updating medicine:', error)
     );
   });
 };
 
-// Function to insert a new transaction into the `transactions` table
-export const insertTransaction = (items, total, date) => {
+// Function to delete a medicine
+export const deleteMedicine = (id, callback) => {
   db.transaction((tx) => {
     tx.executeSql(
-      `INSERT INTO transactions (items, total, date) VALUES (?, ?, ?)`,
-      [JSON.stringify(items), total, date],
-      (txObj, result) => console.log('Transaction added successfully', result),
-      (txObj, error) => console.log('Error adding transaction:', error)
+      `DELETE FROM medicines WHERE id = ?`,
+      [id],
+      (txObj) => callback(),
+      (txObj, error) => console.error('Error deleting medicine:', error)
     );
   });
 };
 
-// Function to fetch all medicines from the `medicines` table
+// Function to fetch all medicines
 export const fetchMedicines = (callback) => {
   db.transaction((tx) => {
     tx.executeSql(
       `SELECT * FROM medicines`,
       [],
-      (txObj, { rows: { _array } }) => {
-        callback(_array);
-      },
-      (txObj, error) => {
-        console.log('Error fetching medicines:', error);
-      }
+      (txObj, { rows: { _array } }) => callback(_array),
+      (txObj, error) => console.error('Error fetching medicines:', error)
     );
   });
 };
 
-// Function to fetch all transactions from the `transactions` table
-export const fetchTransactions = (callback) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      `SELECT * FROM transactions`,
-      [],
-      (txObj, { rows: { _array } }) => {
-        callback(_array);
-      },
-      (txObj, error) => {
-        console.log('Error fetching transactions:', error);
-      }
-    );
-  });
-};
-// Call initializeDatabase when your app starts
-initializeDatabase()
-  .then(() => {
-    console.log('Database initialized successfully');
-  })
-  .catch((error) => {
-    console.error('Error initializing database:', error);
-  });
-
-// Export the db object for further custom queries if needed
+// Export the db object for custom queries if needed
 export const getDatabase = () => db;
+
+// Initialize the database when your app starts
+initializeDatabase()
+  .then(() => console.log('Database initialized successfully'))
+  .catch((error) => console.error('Error initializing database:', error));

@@ -1,108 +1,89 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { initializeDatabase, getDatabase } from '../../database/database'; // Ensure the path is correct
-import LoadingComponent from '../LoadingComponent'; // Ensure the path is correct
+import * as SQLite from 'expo-sqlite/legacy';
+
+const db = SQLite.openDatabase('pharma_inventory.db');
 
 export const MedicineContext = createContext();
 
 export const MedicineProvider = ({ children }) => {
   const [medicines, setMedicines] = useState([]);
-  const [isDbReady, setIsDbReady] = useState(false);
 
-  // Load medicines from database
   useEffect(() => {
-    const loadMedicines = async () => {
-      try {
-        await initializeDatabase(); // Initialize the database
-        const db = getDatabase(); // Get the database instance
-
-        if (!db) {
-          console.error('Database not initialized');
-          return;
-        }
-
-        db.transaction((tx) => {
-          tx.executeSql(
-            'SELECT * FROM medicines;',
-            [],
-            (txObj, resultSet) => {
-              setMedicines(resultSet.rows._array);
-              setIsDbReady(true); // Set flag indicating the DB is ready
-            },
-            (txObj, error) => {
-              console.log('Error fetching medicines: ', error);
-              setIsDbReady(true); // Set to true even on error to prevent infinite loading
-            }
-          );
-        });
-      } catch (error) {
-        console.error('Error loading medicines: ', error);
-        setIsDbReady(true); // Set to true to prevent infinite loading
-      }
-    };
-
-    loadMedicines();
+    createTable();
+    fetchMedicines();
   }, []);
 
-  // Add new medicine to database
-  const addMedicine = async (newMedicine) => {
-    const db = getDatabase(); // Get the database instance
-
-    if (!db) {
-      console.error('Database not initialized');
-      return;
-    }
-
-    db.transaction((tx) => {
+  const createTable = () => {
+    db.transaction(tx => {
       tx.executeSql(
-        'INSERT INTO medicines (name, type, amount, price, expirationDate, image) VALUES (?, ?, ?, ?, ?, ?);',
-        [newMedicine.name, newMedicine.type, newMedicine.amount, newMedicine.price, newMedicine.expirationDate, newMedicine.image],
-        (txObj, resultSet) => {
-          setMedicines((prevMedicines) => [
-            ...prevMedicines,
-            { id: resultSet.insertId, ...newMedicine },
-          ]);
-        },
-        (txObj, error) => console.log('Error adding medicine: ', error)
+        `CREATE TABLE IF NOT EXISTS medicines (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT,
+          type TEXT,
+          expirationDate TEXT,
+          amount INTEGER,
+          price REAL,
+          image TEXT
+        );`
       );
     });
   };
 
-  // Edit existing medicine in the database
-  const editMedicine = (id, updatedMedicine) => {
-    const db = getDatabase(); // Get the database instance
-
-    if (!db) {
-      console.error('Database not initialized');
-      return;
-    }
-
-    db.transaction((tx) => {
+  const fetchMedicines = () => {
+    db.transaction(tx => {
       tx.executeSql(
-        'UPDATE medicines SET name = ?, type = ?, amount = ?, price = ?, expirationDate = ?, image = ? WHERE id = ?;',
-        [
-          updatedMedicine.name,
-          updatedMedicine.type,
-          updatedMedicine.amount,
-          updatedMedicine.price,
-          updatedMedicine.expirationDate,
-          updatedMedicine.image,
-          id,
-        ],
-        (txObj, resultSet) => {
-          setMedicines((prevMedicines) =>
-            prevMedicines.map((medicine) =>
-              medicine.id === id ? { ...medicine, ...updatedMedicine } : medicine
-            )
+        'SELECT * FROM medicines',
+        [],
+        (_, { rows }) => setMedicines(rows._array),
+        (_, error) => console.error(error)
+      );
+    });
+  };
+
+  const addMedicine = (medicine) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'INSERT INTO medicines (name, type, expirationDate, amount, price, image) VALUES (?, ?, ?, ?, ?, ?)',
+        [medicine.name, medicine.type, medicine.expirationDate, medicine.amount, medicine.price, medicine.image],
+        (_, result) => {
+          setMedicines((prev) => [...prev, { id: result.insertId, ...medicine }]);
+        },
+        (_, error) => console.error(error)
+      );
+    });
+  };
+
+  const editMedicine = (id, updatedMedicine) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'UPDATE medicines SET name = ?, type = ?, expirationDate = ?, amount = ?, price = ?, image = ? WHERE id = ?',
+        [updatedMedicine.name, updatedMedicine.type, updatedMedicine.expirationDate, updatedMedicine.amount, updatedMedicine.price, updatedMedicine.image, id],
+        (_, result) => {
+          setMedicines(prev => 
+            prev.map(med => (med.id === id ? { ...med, ...updatedMedicine } : med))
           );
         },
-        (txObj, error) => console.log('Error updating medicine: ', error)
+        (_, error) => console.error(error)
+      );
+    });
+  };
+
+  const deleteMedicine = (id) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'DELETE FROM medicines WHERE id = ?',
+        [id],
+        () => {
+          setMedicines(prev => prev.filter(med => med.id !== id));
+        },
+        (_, error) => console.error(error)
       );
     });
   };
 
   return (
-    <MedicineContext.Provider value={{ medicines, addMedicine, editMedicine }}>
-      {isDbReady ? children : <LoadingComponent />} 
+    <MedicineContext.Provider value={{ medicines, addMedicine, editMedicine, deleteMedicine }}>
+      {children}
     </MedicineContext.Provider>
   );
 };

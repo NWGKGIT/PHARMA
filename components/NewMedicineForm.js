@@ -40,8 +40,16 @@ const NewMedicineForm = ({ navigation }) => {
   };
 
   const handleDone = () => {
+    console.log('handleDone triggered');
     if (!medicineName || !medicineType || !amount || isNaN(amount) || !price || isNaN(price) || !expirationDate) {
       Alert.alert('Invalid Input', 'Please fill in all fields correctly.');
+      console.log('Validation failed', {
+        medicineName,
+        medicineType,
+        amount,
+        price,
+        expirationDate,
+      });
       return;
     }
   
@@ -51,19 +59,26 @@ const NewMedicineForm = ({ navigation }) => {
       amount: parseInt(amount, 10),
       price: parseFloat(price),
       expirationDate: expirationDate.toISOString().split('T')[0],
-      image: require('../assets/medicine.jpg'), // or you can handle image selection here
+      image: require('../assets/medicine.jpg'), // Handle image selection here if needed
     };
-  
-    addMedicine(newMedicine); // This now adds to the database
-    Alert.alert('Success', 'Medicine added successfully!', [{ text: 'OK', onPress: () => navigation.goBack() }]);
-  
+
+    console.log('New medicine data:', newMedicine);
+
+    addMedicine(newMedicine); // This adds to the database
+    Alert.alert('Success', 'Medicine added successfully!', [
+      { text: 'OK', onPress: () => {
+        console.log('Navigation back triggered');
+        navigation.goBack();
+      }}
+    ]);
+
+    // Reset form
     setMedicineName('');
     setMedicineType(null);
     setAmount('');
     setPrice('');
     setExpirationDate(new Date());
   };
-  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -84,7 +99,7 @@ const NewMedicineForm = ({ navigation }) => {
         setValue={setMedicineType}
         setItems={setTypeItems}
         placeholder="Select medicine type"
-        mode="BADGE" 
+        mode="BADGE"  
         containerStyle={styles.dropdownContainer}
         style={styles.dropdown}
         dropDownContainerStyle={styles.dropDownContainer}
