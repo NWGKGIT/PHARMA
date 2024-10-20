@@ -68,6 +68,22 @@ export const MedicineProvider = ({ children }) => {
     });
   };
 
+  // New updateMedicineAmount function
+  const updateMedicineAmount = (id, newAmount) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'UPDATE medicines SET amount = ? WHERE id = ?',
+        [newAmount, id],
+        (_, result) => {
+          setMedicines(prev => 
+            prev.map(med => (med.id === id ? { ...med, amount: newAmount } : med))
+          );
+        },
+        (_, error) => console.error('Error updating medicine amount:', error)
+      );
+    });
+  };
+
   const deleteMedicine = (id) => {
     db.transaction(tx => {
       tx.executeSql(
@@ -82,7 +98,7 @@ export const MedicineProvider = ({ children }) => {
   };
 
   return (
-    <MedicineContext.Provider value={{ medicines, addMedicine, editMedicine, deleteMedicine }}>
+    <MedicineContext.Provider value={{ medicines, addMedicine, editMedicine, deleteMedicine, updateMedicineAmount }}>
       {children}
     </MedicineContext.Provider>
   );
