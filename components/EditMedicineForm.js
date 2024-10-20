@@ -56,7 +56,7 @@ const EditMedicineForm = ({ route, navigation }) => {
       Alert.alert('Invalid Input', 'Please fill in all fields correctly.');
       return;
     }
-  
+   
     let finalImageUri = medicine.image;
     if (tempImageUri) {
       const fileName = `medicine${medicine.id}.png`;
