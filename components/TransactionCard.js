@@ -12,7 +12,7 @@ const TransactionCard = ({ transaction }) => {
         renderItem={({ item }) => (
           <View style={styles.itemRow}>
             <Text style={styles.itemName}>{item.name} x{item.selectedAmount}</Text>
-            <Text style={styles.itemPrice}>${(item.price * item.selectedAmount).toFixed(2)}</Text>
+            <Text style={styles.itemPrice}>${(item.priceSell * item.selectedAmount).toFixed(2)}</Text>
           </View>
         )}
       />

@@ -22,7 +22,7 @@ const MedicineCard = ({
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{medicine.name}</Text>
         <Text style={styles.type}>{medicine.type}</Text>
-        <Text style={styles.price}>Price: ${medicine.price}</Text>
+        <Text style={styles.price}>Price: ${medicine.priceSell}</Text>
         <Text style={styles.expiration}>Expires: {medicine.expirationDate}</Text>
       </View>
       <View style={styles.totalAmountBox}>

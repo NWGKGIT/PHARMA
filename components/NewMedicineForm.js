@@ -17,7 +17,8 @@ const NewMedicineForm = ({ navigation }) => {
   const [medicineName, setMedicineName] = useState('');
   const [medicineType, setMedicineType] = useState('');
   const [amount, setAmount] = useState('');
-  const [price, setPrice] = useState('');
+  const [priceBuy, setPriceBuy] = useState('');
+  const [priceSell, setPriceSell] = useState('');
   const [expirationDate, setExpirationDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -28,7 +29,7 @@ const NewMedicineForm = ({ navigation }) => {
   };
 
   const handleDone = () => {
-    if (!medicineName || !medicineType || !amount || isNaN(amount) || !price || isNaN(price) || !expirationDate) {
+    if (!medicineName || !medicineType || !amount || isNaN(amount) || !priceBuy || isNaN(priceBuy) || !priceSell || isNaN(priceSell) || !expirationDate) {
       Alert.alert('Invalid Input', 'Please fill in all fields correctly.');
       return;
     }
@@ -37,7 +38,8 @@ const NewMedicineForm = ({ navigation }) => {
       name: medicineName,
       type: medicineType,
       amount: parseInt(amount, 10),
-      price: parseFloat(price),
+      priceBuy: parseFloat(priceBuy),
+      priceSell: parseFloat(priceSell),
       expirationDate: expirationDate.toISOString().split('T')[0],
       image: require('../assets/medicine.jpg'), 
     };
@@ -50,7 +52,8 @@ const NewMedicineForm = ({ navigation }) => {
     setMedicineName('');
     setMedicineType('');
     setAmount('');
-    setPrice('');
+    setPriceBuy('');
+    setPriceSell('');
     setExpirationDate(new Date());
   };
 
@@ -81,13 +84,22 @@ const NewMedicineForm = ({ navigation }) => {
         onChangeText={setAmount}
       />
 
-      <Text style={styles.label}>Price</Text>
+      <Text style={styles.label}>Price/Buy</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter price"
+        placeholder="Enter buy price"
         keyboardType="numeric"
-        value={price}
-        onChangeText={setPrice}
+        value={priceBuy}
+        onChangeText={setPriceBuy}
+      />
+
+      <Text style={styles.label}>Price/Sell</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter sell price"
+        keyboardType="numeric"
+        value={priceSell}
+        onChangeText={setPriceSell}
       />
 
       <Text style={styles.label}>Expiration Date</Text>

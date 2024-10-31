@@ -22,7 +22,7 @@ const OrderModal = ({ visible, onClose, selectedMedicines }) => {
   const [confirmationVisible, setConfirmationVisible] = useState(false);
 
   const totalPrice = selectedMedicines.reduce((total, med) => {
-    return total + med.price * med.selectedAmount;
+    return total + med.priceSell * med.selectedAmount;
   }, 0);
 
   const handleOrder = () => {
@@ -84,7 +84,7 @@ const OrderModal = ({ visible, onClose, selectedMedicines }) => {
             renderItem={({ item }) => (
               <View style={styles.medicineItem}>
                 <Text style={styles.medicineName}>{item.name} x{item.selectedAmount}</Text>
-                <Text style={styles.medicinePrice}>${(item.price * item.selectedAmount).toFixed(2)}</Text>
+                <Text style={styles.medicinePrice}>${(item.priceSell * item.selectedAmount).toFixed(2)}</Text>
               </View>
             )}
             contentContainerStyle={styles.medicineList}

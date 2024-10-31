@@ -5,7 +5,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  Image,
+  Image, 
   ScrollView,
   Platform,
   Alert,
@@ -23,7 +23,8 @@ const EditMedicineForm = ({ route, navigation }) => {
   const [medicineType, setMedicineType] = useState(medicine.type);
   const [amount, setAmount] = useState(medicine.amount.toString());
   const [expirationDate, setExpirationDate] = useState(new Date(medicine.expirationDate));
-  const [price, setPrice] = useState(medicine.price ? medicine.price.toString() : '');
+  const [priceBuy, setPriceBuy] = useState(medicine.priceBuy ? medicine.priceBuy.toString() : '');
+  const [priceSell, setPriceSell] = useState(medicine.priceSell ? medicine.priceSell.toString() : '');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [tempImageUri, setTempImageUri] = useState(null);
@@ -50,7 +51,7 @@ const EditMedicineForm = ({ route, navigation }) => {
   };
 
   const handleDone = async () => {
-    if (!medicineName || !medicineType || !amount || isNaN(amount) || !expirationDate || !price || isNaN(price)) {
+    if (!medicineName || !medicineType || !amount || isNaN(amount) || !expirationDate || !priceBuy || isNaN(priceBuy) || !priceSell || isNaN(priceSell)) {
       Alert.alert('Invalid Input', 'Please fill in all fields correctly.');
       return;
     }
@@ -76,7 +77,8 @@ const EditMedicineForm = ({ route, navigation }) => {
       type: medicineType,
       amount: parseInt(amount, 10),
       expirationDate: expirationDate.toISOString().split('T')[0],
-      price: parseFloat(price),
+      priceBuy: parseFloat(priceBuy),
+      priceSell: parseFloat(priceSell),
       image: finalImageUri,
     };
 
@@ -121,14 +123,22 @@ const EditMedicineForm = ({ route, navigation }) => {
         onChangeText={setAmount}
       />
 
-      {/* Price Input */}
-      <Text style={styles.label}>Price</Text>
+      <Text style={styles.label}>Price/Buy</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter Price"
+        placeholder="Enter Buy Price"
         keyboardType="numeric"
-        value={price}
-        onChangeText={setPrice}
+        value={priceBuy}
+        onChangeText={setPriceBuy}
+      />
+
+      <Text style={styles.label}>Price/Sell</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter Sell Price"
+        keyboardType="numeric"
+        value={priceSell}
+        onChangeText={setPriceSell}
       />
 
       <Text style={styles.label}>Expiration Date</Text>
