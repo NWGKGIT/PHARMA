@@ -10,7 +10,7 @@ import {
 import { MedicineContext } from './contexts/MedicineContext';
 import MedicineCardWithoutAmount from './MedicineCardWithoutAmount'; 
 
-const AddNewMedicineForm = ({ navigation }) => {
+const EditSearch = ({ navigation }) => {
   const { medicines } = useContext(MedicineContext);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredMedicines, setFilteredMedicines] = useState(medicines);
@@ -75,4 +75,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddNewMedicineForm;
+export default EditSearch;

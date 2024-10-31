@@ -15,10 +15,10 @@ const AddScreen = () => {
       {/* Add New Medicine Button */}
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('AddExistingMedicineForm')}
+        onPress={() => navigation.navigate('EditSearch')}
       >  
         <Image source={require('../../assets/AddExisting.png')}  style={styles.icon} />
-        <Text style={styles.buttonText}>Add Existing Medicine</Text>
+        <Text style={styles.buttonText}>Edit Medicine</Text>
       </TouchableOpacity>
 
       {/* Search Existing Medicine Button */}

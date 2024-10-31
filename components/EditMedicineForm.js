@@ -99,7 +99,7 @@ const EditMedicineForm = ({ route, navigation }) => {
       <Text style={styles.label}>Medicine Name</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter medicine name"
+        placeholder="Enter Medicine Name"
         value={medicineName}
         onChangeText={setMedicineName}
       />
@@ -107,7 +107,7 @@ const EditMedicineForm = ({ route, navigation }) => {
       <Text style={styles.label}>Medicine Type</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter medicine type"
+        placeholder="Enter Medicine Type"
         value={medicineType}
         onChangeText={setMedicineType}
       />
@@ -115,7 +115,7 @@ const EditMedicineForm = ({ route, navigation }) => {
       <Text style={styles.label}>Amount</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter amount"
+        placeholder="Enter Amount"
         keyboardType="numeric"
         value={amount}
         onChangeText={setAmount}
@@ -125,7 +125,7 @@ const EditMedicineForm = ({ route, navigation }) => {
       <Text style={styles.label}>Price</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter price"
+        placeholder="Enter Price"
         keyboardType="numeric"
         value={price}
         onChangeText={setPrice}

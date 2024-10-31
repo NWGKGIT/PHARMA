@@ -3,7 +3,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import AddScreen from '../screens/AddScreen';
-import AddExistingMedicineForm from '../AddExistingMedicineForm';
+import EditSearch from '../EditSearch';
 import NewMedicineForm from '../NewMedicineForm';
 import EditMedicineForm from '../EditMedicineForm'; 
 import DeleteMedicineScreen from '../screens/DeleteMedicineScreen';
@@ -19,8 +19,8 @@ const AddStackNavigator = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="AddExistingMedicineForm"
-        component={AddExistingMedicineForm}
+        name="EditSearch"
+        component={EditSearch}
         options={{ title: 'Add Existing Medicine' }}
       />
       <Stack.Screen
