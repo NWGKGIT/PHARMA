@@ -12,7 +12,8 @@ export const TransactionProvider = ({ children }) => {
       try {
         const storedTransactions = await AsyncStorage.getItem('transactions');
         if (storedTransactions !== null) {
-          setTransactions(JSON.parse(storedTransactions));
+          // Parse and reverse to show newest transactions first
+          setTransactions(JSON.parse(storedTransactions).reverse());
         }
       } catch (error) {
         console.log('Failed to load transactions from storage:', error);
@@ -23,8 +24,8 @@ export const TransactionProvider = ({ children }) => {
 
   const addTransaction = async (newTransaction) => {
     const updatedTransactions = [
-      ...transactions,
       { ...newTransaction, id: (transactions.length + 1).toString(), date: new Date().toISOString() },
+      ...transactions, // Add new transaction at the start of the list
     ];
     setTransactions(updatedTransactions);
     try {

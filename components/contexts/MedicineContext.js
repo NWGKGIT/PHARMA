@@ -68,7 +68,7 @@ export const MedicineProvider = ({ children }) => {
     });
   };
 
-  // New updateMedicineAmount function
+
   const updateMedicineAmount = (id, newAmount) => {
     db.transaction(tx => {
       tx.executeSql(

@@ -23,18 +23,17 @@ const EditMedicineForm = ({ route, navigation }) => {
   const [medicineType, setMedicineType] = useState(medicine.type);
   const [amount, setAmount] = useState(medicine.amount.toString());
   const [expirationDate, setExpirationDate] = useState(new Date(medicine.expirationDate));
+  const [price, setPrice] = useState(medicine.price ? medicine.price.toString() : '');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [tempImageUri, setTempImageUri] = useState(null);
 
-  // Handle Date Picker
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || expirationDate;
     setShowDatePicker(Platform.OS === 'ios');
     setExpirationDate(currentDate);
   };
 
-  // Pick Image from Camera
   const openCamera = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
@@ -45,18 +44,17 @@ const EditMedicineForm = ({ route, navigation }) => {
     const result = await ImagePicker.launchCameraAsync();
     if (!result.cancelled) {
       const tempUri = result.uri;
-      setSelectedImage(tempUri); // Display selected image
-      setTempImageUri(tempUri); // Save temporarily
+      setSelectedImage(tempUri);
+      setTempImageUri(tempUri);
     }
   };
 
-  // Handle Done button
   const handleDone = async () => {
-    if (!medicineName || !medicineType || !amount || isNaN(amount) || !expirationDate) {
+    if (!medicineName || !medicineType || !amount || isNaN(amount) || !expirationDate || !price || isNaN(price)) {
       Alert.alert('Invalid Input', 'Please fill in all fields correctly.');
       return;
     }
-   
+
     let finalImageUri = medicine.image;
     if (tempImageUri) {
       const fileName = `medicine${medicine.id}.png`;
@@ -72,22 +70,22 @@ const EditMedicineForm = ({ route, navigation }) => {
         Alert.alert('Error', 'Failed to save image.');
       }
     }
-  
+
     const updatedMedicine = {
       name: medicineName,
       type: medicineType,
       amount: parseInt(amount, 10),
       expirationDate: expirationDate.toISOString().split('T')[0],
+      price: parseFloat(price),
       image: finalImageUri,
     };
-  
-    editMedicine(medicine.id, updatedMedicine); // Update the database and context
+
+    editMedicine(medicine.id, updatedMedicine);
     Alert.alert('Success', 'Medicine updated successfully!', [{ text: 'OK', onPress: () => navigation.goBack() }]);
   };
-  
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Medicine Image */}
       {selectedImage ? (
         <Image source={{ uri: selectedImage }} style={styles.image} />
       ) : (
@@ -98,7 +96,6 @@ const EditMedicineForm = ({ route, navigation }) => {
         <Text style={styles.changeImageButtonText}>Change Image</Text>
       </TouchableOpacity>
 
-      {/* Medicine Name */}
       <Text style={styles.label}>Medicine Name</Text>
       <TextInput
         style={styles.input}
@@ -107,7 +104,6 @@ const EditMedicineForm = ({ route, navigation }) => {
         onChangeText={setMedicineName}
       />
 
-      {/* Medicine Type */}
       <Text style={styles.label}>Medicine Type</Text>
       <TextInput
         style={styles.input}
@@ -116,7 +112,6 @@ const EditMedicineForm = ({ route, navigation }) => {
         onChangeText={setMedicineType}
       />
 
-      {/* Amount */}
       <Text style={styles.label}>Amount</Text>
       <TextInput
         style={styles.input}
@@ -126,7 +121,16 @@ const EditMedicineForm = ({ route, navigation }) => {
         onChangeText={setAmount}
       />
 
-      {/* Expiration Date */}
+      {/* Price Input */}
+      <Text style={styles.label}>Price</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter price"
+        keyboardType="numeric"
+        value={price}
+        onChangeText={setPrice}
+      />
+
       <Text style={styles.label}>Expiration Date</Text>
       <TouchableOpacity style={styles.dateButton} onPress={() => setShowDatePicker(true)}>
         <Text style={styles.dateText}>{expirationDate.toISOString().split('T')[0]}</Text>
@@ -141,7 +145,6 @@ const EditMedicineForm = ({ route, navigation }) => {
         />
       )}
 
-      {/* Done Button */}
       <TouchableOpacity style={styles.doneButton} onPress={handleDone}>
         <Text style={styles.doneButtonText}>Done</Text>
       </TouchableOpacity>
@@ -196,7 +199,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   doneButton: {
-    backgroundColor: '#2196F3', 
+    backgroundColor: '#2196F3',
     padding: 15,
     borderRadius: 8,
     marginTop: 30,
