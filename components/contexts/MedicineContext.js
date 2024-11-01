@@ -22,12 +22,13 @@ export const MedicineProvider = ({ children }) => {
           type TEXT,
           expirationDate TEXT,
           amount INTEGER,
-          price REAL,
+          priceBuy REAL,
+          priceSell REAL,
           image TEXT
         );`
       );
     });
-  };
+  }; 
 
   const fetchMedicines = () => {
     db.transaction(tx => {
@@ -43,8 +44,8 @@ export const MedicineProvider = ({ children }) => {
   const addMedicine = (medicine) => {
     db.transaction(tx => {
       tx.executeSql(
-        'INSERT INTO medicines (name, type, expirationDate, amount, price, image) VALUES (?, ?, ?, ?, ?, ?)',
-        [medicine.name, medicine.type, medicine.expirationDate, medicine.amount, medicine.price, medicine.image],
+        'INSERT INTO medicines (name, type, expirationDate, amount, priceBuy, priceSell, image) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [medicine.name, medicine.type, medicine.expirationDate, medicine.amount, medicine.priceBuy, medicine.priceSell, medicine.image],
         (_, result) => {
           setMedicines((prev) => [...prev, { id: result.insertId, ...medicine }]);
         },
@@ -56,8 +57,8 @@ export const MedicineProvider = ({ children }) => {
   const editMedicine = (id, updatedMedicine) => {
     db.transaction(tx => {
       tx.executeSql(
-        'UPDATE medicines SET name = ?, type = ?, expirationDate = ?, amount = ?, price = ?, image = ? WHERE id = ?',
-        [updatedMedicine.name, updatedMedicine.type, updatedMedicine.expirationDate, updatedMedicine.amount, updatedMedicine.price, updatedMedicine.image, id],
+        'UPDATE medicines SET name = ?, type = ?, expirationDate = ?, amount = ?, priceBuy = ?, priceSell = ?, image = ? WHERE id = ?',
+        [updatedMedicine.name, updatedMedicine.type, updatedMedicine.expirationDate, updatedMedicine.amount, updatedMedicine.priceBuy, updatedMedicine.priceSell, updatedMedicine.image, id],
         (_, result) => {
           setMedicines(prev => 
             prev.map(med => (med.id === id ? { ...med, ...updatedMedicine } : med))

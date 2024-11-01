@@ -19,7 +19,8 @@ const createMedicinesTable = () => {
           name TEXT,
           type TEXT,
           amount INTEGER,
-          price REAL,
+          priceBuy REAL,
+          priceSell REAL,
           expirationDate TEXT,
           image TEXT
         );`,
@@ -59,8 +60,8 @@ export const insertMedicine = (medicine, callback) => {
 
   db.transaction((tx) => {
     tx.executeSql(
-      `INSERT INTO medicines (name, type, amount, price, expirationDate, image) VALUES (?, ?, ?, ?, ?, ?)`,
-      [medicine.name, medicine.type, medicine.amount, medicine.price, medicine.expirationDate, medicine.image],
+      `INSERT INTO medicines (name, type, amount, priceBuy, priceSell, expirationDate, image) VALUES (?, ?, ?, ?, ?, ?,?)`,
+      [medicine.name, medicine.type, medicine.amount, medicine.priceBuy,medicine.priceSell, medicine.expirationDate, medicine.image],
       (txObj, result) => callback(result.insertId),
       (txObj, error) => console.error('Error adding medicine:', error)
     );
@@ -71,14 +72,14 @@ export const insertMedicine = (medicine, callback) => {
 export const updateMedicine = (id, updatedMedicine, callback) => {
   db.transaction((tx) => {
     tx.executeSql(
-      `UPDATE medicines SET name = ?, type = ?, amount = ?, price = ?, expirationDate = ?, image = ? WHERE id = ?`,
-      [updatedMedicine.name, updatedMedicine.type, updatedMedicine.amount, updatedMedicine.price, updatedMedicine.expirationDate, updatedMedicine.image, id],
+      `UPDATE medicines SET name = ?, type = ?, amount = ?, priceBuy = ?, priceSell = ?, expirationDate = ?, image = ? WHERE id = ?`,
+      [updatedMedicine.name, updatedMedicine.type, updatedMedicine.amount, updatedMedicine.priceBuy,updatedMedicine.priceSell, updatedMedicine.expirationDate, updatedMedicine.image, id],
       (txObj) => callback(),
       (txObj, error) => console.error('Error updating medicine:', error)
     );
   });
 };
-
+ 
 // Function to delete a medicine
 export const deleteMedicine = (id, callback) => {
   db.transaction((tx) => {
