@@ -79,7 +79,19 @@ export const updateMedicine = (id, updatedMedicine, callback) => {
     );
   });
 };
- 
+
+// Function to update medicine amount
+export const updateMedicineAmount = (id, newAmount, callback) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      'UPDATE medicines SET amount = ? WHERE id = ?',
+      [newAmount, id],
+      (txObj) => callback(),
+      (txObj, error) => console.error('Error updating medicine amount:', error)
+    );
+  });
+};
+
 // Function to delete a medicine
 export const deleteMedicine = (id, callback) => {
   db.transaction((tx) => {

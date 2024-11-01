@@ -1,7 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import * as SQLite from 'expo-sqlite/legacy';
-
-const db = SQLite.openDatabase('pharma_inventory.db');
+import { fetchMedicines, insertMedicine, updateMedicine, deleteMedicine, updateMedicineAmount as dbUpdateMedicineAmount } from '../../database/database';
 
 export const MedicineContext = createContext();
 
@@ -9,97 +7,43 @@ export const MedicineProvider = ({ children }) => {
   const [medicines, setMedicines] = useState([]);
 
   useEffect(() => {
-    createTable();
-    fetchMedicines();
+    fetchMedicinesFromDB();
   }, []);
 
-  const createTable = () => {
-    db.transaction(tx => {
-      tx.executeSql(
-        `CREATE TABLE IF NOT EXISTS medicines (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT,
-          type TEXT,
-          expirationDate TEXT,
-          amount INTEGER,
-          priceBuy REAL,
-          priceSell REAL,
-          image TEXT
-        );`
-      );
-    });
-  }; 
-
-  const fetchMedicines = () => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT * FROM medicines',
-        [],
-        (_, { rows }) => setMedicines(rows._array),
-        (_, error) => console.error(error)
-      );
-    });
+  const fetchMedicinesFromDB = () => {
+    fetchMedicines(setMedicines);
   };
 
   const addMedicine = (medicine) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'INSERT INTO medicines (name, type, expirationDate, amount, priceBuy, priceSell, image) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [medicine.name, medicine.type, medicine.expirationDate, medicine.amount, medicine.priceBuy, medicine.priceSell, medicine.image],
-        (_, result) => {
-          setMedicines((prev) => [...prev, { id: result.insertId, ...medicine }]);
-        },
-        (_, error) => console.error(error)
-      );
+    insertMedicine(medicine, (id) => {
+      setMedicines((prev) => [...prev, { id, ...medicine }]);
     });
   };
 
   const editMedicine = (id, updatedMedicine) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'UPDATE medicines SET name = ?, type = ?, expirationDate = ?, amount = ?, priceBuy = ?, priceSell = ?, image = ? WHERE id = ?',
-        [updatedMedicine.name, updatedMedicine.type, updatedMedicine.expirationDate, updatedMedicine.amount, updatedMedicine.priceBuy, updatedMedicine.priceSell, updatedMedicine.image, id],
-        (_, result) => {
-          setMedicines(prev => 
-            prev.map(med => (med.id === id ? { ...med, ...updatedMedicine } : med))
-          );
-        },
-        (_, error) => console.error(error)
+    updateMedicine(id, updatedMedicine, () => {
+      setMedicines((prev) =>
+        prev.map(med => (med.id === id ? { ...med, ...updatedMedicine } : med))
       );
     });
   };
 
-  
   const updateMedicineAmount = (id, newAmount) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'UPDATE medicines SET amount = ? WHERE id = ?',
-        [newAmount, id],
-        (_, result) => {
-          setMedicines(prev => 
-            prev.map(med => (med.id === id ? { ...med, amount: newAmount } : med))
-          );
-        },
-        (_, error) => console.error('Error updating medicine amount:', error)
+    dbUpdateMedicineAmount(id, newAmount, () => {
+      setMedicines(prev =>
+        prev.map(med => (med.id === id ? { ...med, amount: newAmount } : med))
       );
     });
   };
 
-  const deleteMedicine = (id) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'DELETE FROM medicines WHERE id = ?',
-        [id],
-        () => {
-          setMedicines(prev => prev.filter(med => med.id !== id));
-        },
-        (_, error) => console.error(error)
-      );
+  const removeMedicine = (id) => {
+    deleteMedicine(id, () => {
+      setMedicines(prev => prev.filter(med => med.id !== id));
     });
   };
 
   return (
-    <MedicineContext.Provider value={{ medicines, addMedicine, editMedicine, deleteMedicine, updateMedicineAmount }}>
+    <MedicineContext.Provider value={{ medicines, addMedicine, editMedicine, removeMedicine, updateMedicineAmount }}>
       {children}
     </MedicineContext.Provider>
   );

@@ -4,11 +4,11 @@ import { MedicineContext } from './contexts/MedicineContext';
 import DeleteModal from './DeleteModal';
 
 const DeleteMedicineForm = ({ medicineId }) => {
-  const { deleteMedicine } = useContext(MedicineContext);
+  const { removeMedicine } = useContext(MedicineContext);
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleDelete = () => {
-    deleteMedicine(medicineId);
+    removeMedicine(medicineId);
     setModalVisible(false);
   };
 
